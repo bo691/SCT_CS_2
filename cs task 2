@@ -1,0 +1,32 @@
+from PIL import Image
+import numpy as np
+
+def encrypt_image(input_path, output_path, shift=50):
+    """Encrypts image by swapping R/B channels and adding shift modulo 256."""
+    img = Image.open(input_path).convert('RGB')
+    pixels = np.array(img)
+    
+    # Swap R and B channels
+    pixels = pixels[:, :, [0, 2, 1]]
+    
+    # Apply mathematical shift
+    pixels = (pixels + shift) % 256
+    
+    encrypted = Image.fromarray(pixels.astype(np.uint8))
+    encrypted.save(output_path)
+    print(f"Encrypted image saved to {output_path}")
+
+def decrypt_image(input_path, output_path, shift=50):
+    """Decrypts by reversing shift and swapping channels back."""
+    img = Image.open(input_path).convert('RGB')
+    pixels = np.array(img)
+    
+    # Reverse mathematical shift
+    pixels = (pixels - shift + 256) % 256
+    
+    # Swap channels back
+    pixels = pixels[:, :, [0, 2, 1]]
+    
+    decrypted = Image.fromarray(pixels.astype(np.uint8))
+    decrypted.save(output_path)
+    print(f"Decrypted image saved to {output_path}")
